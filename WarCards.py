@@ -26,6 +26,7 @@ repeat
 Special Round (War!)
 if both players 1 and 2 place a card of the same value at the same time down
 War round begins:
+put drawn cards back into their respective deck
 each player places three cards face down
 each player then draws a fourth card and places it face up
 the face up cards are compared:
@@ -81,15 +82,63 @@ class Player:
     def __init__(self, name, hand):
         self.name = name
         self.hand = hand
-    def print_hand(self):
-        print(f"{self.name}'s hand includes: {self.hand}\nTotal number of cards: {len(self.hand)}")
-"""
+    def get_hand(self):
+        return self.hand
+    def update_hand(self, new_hand):
+        self.hand = new_hand
+        return self.hand
+
+
 class Round:
-    def __init__(self):
-           
-    class War:
-        def __init__(self):
-"""
+    def __init__(self, p1_hand, p2_hand):
+        self.p1_hand = p1_hand
+        self.p2_hand = p2_hand
+        #two randomized hands, total of 52 cards, 26 in each
+        #each pulls a card from their respective hand
+        #player with the higher card value takes their card and the loser's card and adds it to their pile
+    def basic_round(self):
+        p1_card = self.p1_hand.pop(0)
+        p2_card = self.p2_hand.pop(0)
+        print(f"Player 1's card: {p1_card}\nPlayer 2's card: {p2_card}")
+        if p1_card[0] > p1_card[0]:
+            print("Player 1 wins the round")
+            self.p1_hand.extend([p1_card, p2_card])
+            return self.p1_hand, self.p2_hand
+        elif p1_card[0] < p1_card[0]:
+            print("Player 2 wins the round")
+            self.p2_hand.extend([p2_card, p1_card])
+            return self.p1_hand, self.p2_hand
+        else:
+            print("Both players' card have the same value: time for War!")
+            return self.p1_hand, self.p2_hand
+    def war_round(self):
+        self.p1_hand.extend(p1_card)
+        if (len(self.p1_hand) < 3):
+            print("Player 1 does not have enough cards to go to war\n Player 2 wins!")
+            return 0
+        elif (len(self.p2_hand) < 3):
+            print("Player 2 does not have enough cards to go to war\n Player 1 wins!")
+            return 0
+        else:
+            self.p1_hand.append(p1_card)
+            p1_war = []
+            p2_war = []
+            for i in range (0,5):
+                p1_war.append(self.p1_hand[i])
+                p2_war.append(self.p2_hand[i])
+            p1_war_card = p1_war.pop()
+            p2_war_card = p2_war.pop()
+            print(f"Player 1's war card: {p1_war_card}\nPlayer 2's war card: {p2_war_card}")
+            if p1_war_card[0] > p2_war_card[0]:
+                print("Player 1 wins the round")
+                self.p1_hand.extend([p1_war_card, p1_war, p2_war_card, p2_war])
+                return self.p1_hand, self.p2_hand
+            elif p1_war_card[0] < p2_war_card[0]:
+                print("Player 2 wins the round")
+                self.p2_hand.extend([p2_war_card, p2_war, p1_war_card, p1_war])
+                return self.p1_hand, self.p2_hand
+ 
+
 
 def main():
     current_deck = Deck()
@@ -99,6 +148,18 @@ def main():
     hand1, hand2 = current_deck.deal_deck()
     player1 = Player(name, hand1)
     player2 = Player("Bot", hand2)
-    player1.print_hand()
-    player2.print_hand()
+    game_begins = input("Are you ready to play War? Enter 'Yes' or 'No': ")
+    if game_begins == "Yes":
+        print("Let's play!")
+        #Need to add in a loop to continue the rounds until game has ended/one player has all cards/war w/o enough cards
+        round = Round(player1.get_hand(), player2.get_hand())
+        round.basic_round()
+        #Continue game loop here 
+        
+    else:
+        #Placeholder for not playing
+        print("Maybe next time!")
+        
+
+
 
