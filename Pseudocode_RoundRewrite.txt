@@ -1,0 +1,96 @@
+===========================================
+WAR GAME — ROUND CLASS (RECURSIVE DESIGN)
+PSEUDOCODE FOR FUTURE IMPLEMENTATION
+===========================================
+
+CLASS Round:
+    ATTRIBUTES:
+        p1_hand
+        p2_hand
+        spoils
+        p1_name
+        p2_name
+
+-------------------------------------------
+METHOD play_basic_round():
+    # Check end condition
+    if p1_hand is empty OR p2_hand is empty:
+        return (p1_hand, p2_hand, game_over = true)
+
+    # Each player draws top card
+    p1_card = remove first card from p1_hand
+    p2_card = remove first card from p2_hand
+
+    # Compare card values
+    if p1_card value > p2_card value:
+        append p1_card then p2_card to p1_hand
+        return (p1_hand, p2_hand, game_over = false)
+
+    if p2_card value > p1_card value:
+        append p2_card then p1_card to p2_hand
+        return (p1_hand, p2_hand, game_over = false)
+
+    # Values tied: initiate War
+    spoils = [p1_card, p2_card]
+    return play_war_round(spoils)
+
+-------------------------------------------
+METHOD play_war_round(current_spoils):
+    # 0. Check if players have enough cards for War
+    if p1_hand has fewer than 4 cards:
+        # Player 1 cannot continue War → Player 2 wins
+        current_spoils += all remaining p1_hand + p2_hand
+        p1_hand becomes empty
+        return (p1_hand, p2_hand, game_over = true)
+
+    if p2_hand has fewer than 4 cards:
+        # Player 2 cannot continue War → Player 1 wins
+        current_spoils += all remaining p2_hand + p1_hand
+        p2_hand becomes empty
+        return (p1_hand, p2_hand, game_over = true)
+
+    # 1. Each player places 3 face-down cards
+    for i in range 3:
+        current_spoils.append(remove first card from p1_hand)
+        current_spoils.append(remove first card from p2_hand)
+
+    # 2. Each player draws War card (face-up)
+    p1_war_card = remove first card from p1_hand
+    p2_war_card = remove first card from p2_hand
+
+    current_spoils.append(p1_war_card)
+    current_spoils.append(p2_war_card)
+
+    # 3. Compare War cards
+    if p1_war_card value > p2_war_card value:
+        award_spoils_to_winner(p1_hand, current_spoils)
+        return (p1_hand, p2_hand, game_over = false)
+
+    if p2_war_card value > p1_war_card value:
+        award_spoils_to_winner(p2_hand, current_spoils)
+        return (p1_hand, p2_hand, game_over = false)
+
+    # 4. Another tie → recursive War
+    return play_war_round(current_spoils)
+
+-------------------------------------------
+METHOD award_spoils_to_winner(winner_hand, spoils):
+    for each card in spoils (in original order):
+        append card to winner_hand
+
+    # caller handles clearing spoils if needed
+    return
+
+-------------------------------------------
+ROUND RETURNS FORMAT:
+    (updated_p1_hand, updated_p2_hand, game_over_flag)
+
+-------------------------------------------
+GAME LOOP EXAMPLE (USING ROUND CLASS):
+    game_over = false
+    while not game_over:
+        p1_hand, p2_hand, game_over = round.play_basic_round()
+
+===========================================
+END OF PSEUDOCODE
+===========================================
