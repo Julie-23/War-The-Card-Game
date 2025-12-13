@@ -7,12 +7,13 @@ class Deck:
     #Initializing the deck
     def __init__(self):
         self.total_deck = []
-        self.num_split = 2
         self.temp_deck = []
         self.suits = ["Hearts", "Diamonds", "Spades", "Clubs"]
         
     #Generating the deck
     def generating_cards(self):
+        self.temp_deck = []
+        self.total_deck = []
         # Number cards 2-10
         for num in range(2, 11):
             for suit in self.suits:
@@ -59,12 +60,13 @@ class Round:
         self.p2_hand = p2_hand
         self.p1_name = p1_name
         self.p2_name = p2_name
+    #Basic Round
     def basic_round(self):
         if len(self.p1_hand) == 0 or len(self.p2_hand) == 0:
             return self.p1_hand, self.p2_hand
         p1_card = self.p1_hand.pop(0)
         p2_card = self.p2_hand.pop(0)
-        print(f"{self.p1_name}'s card: {p1_card}\n{self.p2_name}'s card: {p2_card}")
+        print(f"{self.p1_name}'s card: {p1_card[1]} of {p1_card[2]}\n{self.p2_name}'s card: {p2_card[1]} of {p2_card[2]}")
         if p1_card[0] > p2_card[0]:
             print(f"{self.p1_name} wins the round")
             self.p1_hand.extend([p1_card, p2_card])
@@ -77,46 +79,54 @@ class Round:
             print("Both players' card have the same value: time for War!")
             spoils = [p1_card, p2_card]
             return self.war_round(spoils)
+        
+    #War Round
     def war_round(self, current_spoils):
         if len(self.p1_hand) < 4:
-            print("Player 1 does not have enough cards to go to war\n Player 2 wins!")
+            print(f"{self.p1_name} does not have enough cards to go to war\n {self.p2_name} wins!")
             self.p2_hand.extend(current_spoils)
             self.p2_hand.extend(self.p1_hand)
             self.p1_hand.clear()
             return self.p1_hand, self.p2_hand
 
         elif len(self.p2_hand) < 4:
-            print("Player 2 does not have enough cards to go to war\n Player 1 wins!")
+            print(f"{self.p2_name} does not have enough cards to go to war\n {self.p1_name} wins!")
             self.p1_hand.extend(current_spoils)
             self.p1_hand.extend(self.p2_hand)
             self.p2_hand.clear()
             return self.p1_hand, self.p2_hand
-
+        
+        #Each player places three cards face down
         for i in range(3):
             current_spoils.append(self.p1_hand.pop(0))
             current_spoils.append(self.p2_hand.pop(0))
-
+        #Each player places one card face up
         p1_war_card = self.p1_hand.pop(0)
         p2_war_card = self.p2_hand.pop(0)
 
+        #Add war cards to spoils
         current_spoils.append(p1_war_card)
         current_spoils.append(p2_war_card)
 
-        # 3. Compare War cards
+        #Compare war cards and determine winner
+        print(f"{self.p1_name}'s war card: {p1_war_card[1]} of {p1_war_card[2]}\n{self.p2_name}'s war card: {p2_war_card[1]} of {p2_war_card[2]}")
         if p1_war_card[0] > p2_war_card[0]:
+            print(f"{self.p1_name} wins the war round")
             self.award_spoils(self.p1_hand, current_spoils)
             return self.p1_hand, self.p2_hand
 
         if p2_war_card[0] > p1_war_card[0]:
+            print(f"{self.p2_name} wins the war round")
             self.award_spoils(self.p2_hand, current_spoils)
             return self.p1_hand, self.p2_hand
 
+        #In case of another tie
+        print("War cards have tied! Another war begins!")
         return self.war_round(current_spoils)
 
+    #Award spoils to the winner
     def award_spoils(self, winner_hand, spoils):
-        for card in spoils:
-            winner_hand.append(card)
-        
+        winner_hand.extend(spoils)
         return
             
 #Main function to run the game
@@ -134,6 +144,7 @@ def main():
     game_begins = input("Are you ready to play War? Enter 'Yes' to begin: ")
     if game_begins.upper().strip() == "YES":
         print("Let's play!")
+        #Game loop
         while len(player1.get_hand()) > 0 and len(player2.get_hand()) > 0:
             current_round = Round(player1.get_hand(), player2.get_hand(), name1, name2)
             current_round.basic_round()
