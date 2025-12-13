@@ -83,14 +83,14 @@ class Round:
     #War Round
     def war_round(self, current_spoils):
         if len(self.p1_hand) < 4:
-            print(f"{self.p1_name} does not have enough cards to go to war\n {self.p2_name} wins!")
+            print(f"{self.p1_name} does not have enough cards to go to war\n{self.p2_name} wins!")
             self.p2_hand.extend(current_spoils)
             self.p2_hand.extend(self.p1_hand)
             self.p1_hand.clear()
             return self.p1_hand, self.p2_hand
 
         elif len(self.p2_hand) < 4:
-            print(f"{self.p2_name} does not have enough cards to go to war\n {self.p1_name} wins!")
+            print(f"{self.p2_name} does not have enough cards to go to war\n{self.p1_name} wins!")
             self.p1_hand.extend(current_spoils)
             self.p1_hand.extend(self.p2_hand)
             self.p2_hand.clear()
